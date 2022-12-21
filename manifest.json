@@ -21,6 +21,7 @@
     "type": "module"
   },
   "permissions": [
-    "storage"
+    "storage",
+    "identity"
   ]
 }
