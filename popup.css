@@ -5,3 +5,7 @@ body {
 h1 {
   color: darkblue;
 }
+
+#authorize {
+  background-color: rgb(126, 169, 204);
+}
