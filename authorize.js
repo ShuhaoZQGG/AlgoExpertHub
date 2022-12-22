@@ -32,7 +32,7 @@ const oauth = {
         if (
           changeInfo.status === "complete"
         ) {
-         if (tab.url.match(/\?code=([\w\/\-]+)/)){
+         if (tab.url && tab.url.match(/\?code=([\w\/\-]+)/)){
             const code = tab.url.match(/\?code=([\w\/\-]+)/)[1]
             await chrome.storage.local.set({"code": code});
             const AuthTokenResponse = await fetch("https://github.com/login/oauth/access_token", {
