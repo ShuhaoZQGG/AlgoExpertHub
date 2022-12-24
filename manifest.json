@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "A Google Chrome Extension for AlgoExpert, Push Question Descriptions, ScrathPad and Solutions into Github When Submit Code",
   "host_permissions": [
-    "https://www.algoexpert.io/questions/*",
+    "https://www.algoexpert.io/*",
     "https://github.com/*",
     "https://google.com/*"
   ],
@@ -23,18 +23,29 @@
   },
   "permissions": [
     "storage",
-    "identity"
+    "identity",
+    "tabs"
   ],
   "content_scripts": [
     {   
-      "matches": ["https://github.com/"],
-      "js": ["authorize.js"]
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "authorize.js",
+        "algoexpert.js"
+      ]
     }
   ],
   "web_accessible_resources": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "resources": ["popup.js"]
+      "resources": [
+        "popup.js",
+        "authorize.js",
+        "algoexpert.js"
+      ]
     }
   ]
 }

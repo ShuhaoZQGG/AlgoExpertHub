@@ -9,3 +9,7 @@ h1 {
 #authorize {
   background-color: rgb(126, 169, 204);
 }
+
+img {
+  max-width: 100px;
+}
