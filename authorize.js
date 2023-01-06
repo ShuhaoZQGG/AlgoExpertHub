@@ -53,14 +53,41 @@ const oauth = {
         "Authorization": `Bearer ${AuthToken}`
       }
     });
-    const UserInfoData = await UserInfoResposne.json()
+    const UserInfoData = await UserInfoResposne.json();
     const Username = UserInfoData.login;
     const AvartarUrl = UserInfoData.avatar_url
-    await chrome.storage.local.set({"username": Username});
-    await chrome.storage.local.set({"avatar": AvartarUrl});
     if (UserInfoResposne.ok === true) {
+      await chrome.storage.local.set({"username": Username});
+      await chrome.storage.local.set({"avatar": AvartarUrl});
       console.log(UserInfoResposne);
       console.log(UserInfoData);
+    }
+  },
+
+  async getRepoInfo(owner, repo) {
+    const RepositoryLabel = document.getElementById("repository_label");
+    const RepositoryInput = document.getElementById("repository_input");
+    const RepositoryButton = document.getElementById("repository_button");
+    const RepositoryElement = document.getElementById("repository");
+    const RepositoryUnlink = document.getElementById("repository_unlink");
+    const AuthToken = this.AUTH_TOKEN;
+    const RepoInfoResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+      headers: {
+        "Authorization": `Bearer ${AuthToken}`
+      }
+    });
+    
+    const RepoInfoData = await RepoInfoResponse.json();
+    if (RepoInfoResponse.ok === true) {
+      RepositoryElement.textContent = repo;
+      await chrome.storage.local.set({"repository": repo});
+      RepositoryLabel.setAttribute("hidden", "");
+      RepositoryInput.setAttribute("hidden", "");
+      RepositoryButton.setAttribute("hidden", "");
+      RepositoryElement.removeAttribute("hidden");
+      RepositoryUnlink.removeAttribute("hidden");
+      console.log(RepoInfoResponse);
+      console.log(RepoInfoData);
     }
   }
 }
