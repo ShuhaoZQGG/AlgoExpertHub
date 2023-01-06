@@ -31,6 +31,7 @@ const oauth = {
       console.log(client_id);
       params.append("client_id", client_id);
       params.append("redirect_url", this.ACCESS_TOKEN_URL);
+      params.append("scope", "repo");
       const AuthorizeResponse = await fetch(`https://github.com/login/oauth/authorize?${params.toString()}`, {
         method: "GET",
       })
@@ -49,6 +50,7 @@ const oauth = {
     await this.init();
     const AuthToken = this.AUTH_TOKEN;
     const UserInfoResposne = await fetch("https://api.github.com/user", {
+      method: "GET",
       headers: {
         "Authorization": `Bearer ${AuthToken}`
       }
@@ -64,6 +66,7 @@ const oauth = {
     }
   },
 
+  // Get the repository info from get request https://api.github.com/repos/{owner}/{repo}
   async getRepoInfo(owner, repo) {
     const RepositoryLabel = document.getElementById("repository_label");
     const RepositoryInput = document.getElementById("repository_input");
@@ -72,12 +75,15 @@ const oauth = {
     const RepositoryUnlink = document.getElementById("repository_unlink");
     const AuthToken = this.AUTH_TOKEN;
     const RepoInfoResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+      method: "GET",
       headers: {
         "Authorization": `Bearer ${AuthToken}`
       }
     });
     
     const RepoInfoData = await RepoInfoResponse.json();
+    // check if the reponse is ok (repo exists)
+    // if yes, set chrome.storage and change dom
     if (RepoInfoResponse.ok === true) {
       RepositoryElement.textContent = repo;
       await chrome.storage.local.set({"repository": repo});
@@ -88,6 +94,40 @@ const oauth = {
       RepositoryUnlink.removeAttribute("hidden");
       console.log(RepoInfoResponse);
       console.log(RepoInfoData);
+    }
+
+    // if not, create a new repo and change chrome storage and change dom
+    else if (RepoInfoResponse.status === 404) {
+      console.log(AuthToken);
+      try {
+        const CreateRepoResposne = await fetch(`https://api.github.com/user/repos`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${AuthToken}`,
+            "Content-Type": "application/json",
+            "accept": "application/json"
+          },
+          body: JSON.stringify({
+            name: repo,
+            description: "This is the test for AlgoExpertHub Extension",
+            private: false,
+          })
+        });
+        const CreateRepoData = await CreateRepoResposne.json();
+        if (CreateRepoResposne.ok) {
+          RepositoryElement.textContent = repo;
+          await chrome.storage.local.set({"repository": repo});
+          RepositoryLabel.setAttribute("hidden", "");
+          RepositoryInput.setAttribute("hidden", "");
+          RepositoryButton.setAttribute("hidden", "");
+          RepositoryElement.removeAttribute("hidden");
+          RepositoryUnlink.removeAttribute("hidden");
+          console.log(CreateRepoResposne);
+          console.log(CreateRepoData);      
+       }
+      } catch(e) {
+        console.error(e);
+      }
     }
   }
 }

@@ -42,14 +42,16 @@ import oauth from './authorize.js';
     RepositoryInput.setAttribute("hidden", "");
     RepositoryButton.setAttribute("hidden", "");
   } else {
-    RepositoryElement.setAttribute("hidden", "");
-    RepositoryUnlink.setAttribute("hidden", "");
-    RepositoryLabel.removeAttribute("hidden");
-    RepositoryInput.removeAttribute("hidden");
-    RepositoryButton.removeAttribute("hidden");
-    RepositoryButton.addEventListener("click", async () => {
-      await oauth.getRepoInfo(Username, RepositoryInput.value);
-    })
+    if (Username) {
+      RepositoryElement.setAttribute("hidden", "");
+      RepositoryUnlink.setAttribute("hidden", "");
+      RepositoryLabel.removeAttribute("hidden");
+      RepositoryInput.removeAttribute("hidden");
+      RepositoryButton.removeAttribute("hidden");
+      RepositoryButton.addEventListener("click", async () => {
+        await oauth.getRepoInfo(Username, RepositoryInput.value);
+      })
+    }
   }
   RepositoryUnlink.addEventListener("click", async () => {
     await chrome.storage.local.set({"repository": ""});
