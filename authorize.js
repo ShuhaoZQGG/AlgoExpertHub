@@ -128,6 +128,8 @@ const oauth = {
       } catch(e) {
         console.error(e);
       }
+    } else {
+      console.log("something is wrong");
     }
   }
 }

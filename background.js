@@ -51,7 +51,45 @@ import "./credentials.js";
   let queryOptions = { active: true, lastFocusedWindow: true };
   // `tab` will either be a `tabs.Tab` instance or `undefined`.
   console.log(await chrome.tabs.query(queryOptions));
-  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    chrome.tabs.create({url: request.Authorization_URL});
+  chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
+    if (request.Authorization_URL) {
+      chrome.tabs.create({url: request.Authorization_URL});
+    }
+
+    if (request.contentScriptQuery === "createREADME") {
+      console.log("receive createREADME Instruction");
+      try {
+        const owner = request.owner;
+        const repo = request.repo;
+        const path = request.path;
+        const AuthToken = request.authToken;
+        console.log("AuthToken received", AuthToken);
+        const message = request.message;
+        const content = request.content;
+        const createReadMeResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${AuthToken}`,
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28"
+          },
+          body: JSON.stringify({
+            message: message,
+            content: btoa(content)
+          })
+        });
+        console.log("createReadMeResponse", createReadMeResponse);
+
+        const RepoInfoResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${AuthToken}`
+          }
+        });
+        console.log("RepoInfoResponse", RepoInfoResponse);
+      } catch(error) {
+        console.log(error);
+      }    
+    }
   });  
 })();
