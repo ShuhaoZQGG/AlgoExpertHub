@@ -1,40 +1,64 @@
 (async () => {
+  const LanguageMapping= {
+    "Python": ".py"
+  }
+
   let SubmitButton = null;
   let QuestionTitle = "";
   let Question = "";
-  let ReadMePath = null;
+  let CodeDiv = null;
+  let Code = "";
+  let SolutionDiv = null;
+  let SolutionButton = null;
+  let Language = "";
+  let Extension = "";
   const owner = (await chrome.storage.local.get("username")).username;
   const repo = (await chrome.storage.local.get('repository')).repository;
   const AuthToken = (await chrome.storage.local.get("auth_token")).auth_token;
-  console.log("AuthToken", AuthToken);
-  console.log("usename", owner);
-  console.log("repository name", repo);
+  // console.log("AuthToken", AuthToken);
+  // console.log("usename", owner);
+  // console.log("repository name", repo);
+  const questionClass = "html";
+  const solutionDivClass = "_5Y_y5dN7pkjcKB22vQiZ"
+  const codeClass = "cm-content"
   const titleClass = "wBpuKvBGWdd7o3KaUFOQ";
-  const createReadMeMessage = "create the folder for the question and write question information into a README.md";
+  const languageClass = "oWoHqZGV1RWlIC1vbJQA";
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     // Get all button elements
     setTimeout(() => {
+      console.log(request);
       if (request.type="currentTab") {
+        Question = "";
+        Code = "";
         const title = document.getElementsByClassName(titleClass)[0].innerText;
         const buttons = document.getElementsByTagName('button');
-        const div = document.getElementsByClassName("html");
-        const childNodes = div[0].childNodes;
-        console.log(childNodes);
+        const questionDiv = document.getElementsByClassName(questionClass);
+        const questionDivChildNodes = questionDiv[0].childNodes;
+        const solutionDiv = document.getElementsByClassName(solutionDivClass)
+        const codeDiv = document.getElementsByClassName(codeClass);
+        const language = document.getElementsByClassName(languageClass);
+        Language = language[0].innerText;
+        SolutionDiv = solutionDiv;
+        CodeDiv = codeDiv;
+        console.log(CodeDiv[CodeDiv.length-1]);
+        console.log(solutionDiv);
+        console.log(Language);
+        Extension = LanguageMapping[Language];
+        console.log(Extension);
+        // console.log(childNodes);
         // console.log(typeof(childNodes));
         QuestionTitle = title;
         Question += "# " + QuestionTitle + '\n';
-        for (const [key, value] of Object.entries(childNodes)) {
+        for (const [key, value] of Object.entries(questionDivChildNodes)) {
           if (value.innerText && (value.innerText.includes("Sample Input") || value.innerText.includes("Sample Output"))) {
             console.log('sample');
             Question += "**" + value.innerText + "**"
-          } else if (value.innerText) {
-            Question += value.innerText;
           } else if (value.textContent) {
-            Question += value.textContent
+            Question += value.textContent;
+          } else if (value.innerText) {
+            Question += value.innerText
           } 
         }
-        const readMePath = `${QuestionTitle}/README.md`;
-        ReadMePath = readMePath;
         console.log(typeof(Question));
         console.log(QuestionTitle);
         console.log(Question);
@@ -50,22 +74,33 @@
           }
         }
       }
-      console.log(request);
       SubmitButton.addEventListener('click', async function() {
+        for (const [key, value] of Object.entries(SolutionDiv[0].childNodes)) {
+          if(value.classList.length == 2) {
+            SolutionButton = value.innerText;
+          }
+        }
+
+        Code = CodeDiv[CodeDiv.length-1].innerText;
+        console.log(Code);
+
+        console.log(SolutionButton);
         // This function will be executed when the button is clicked
         chrome.runtime.sendMessage({
-          contentScriptQuery: "createREADME",
+          contentScriptQuery: "create solution",
+          name: QuestionTitle,
           authToken: AuthToken,
           owner: owner,
           repo: repo,
-          path: ReadMePath,
-          message: createReadMeMessage,
-          content: Question
+          solutionNo: SolutionButton,
+          question: Question,
+          code: Code,
+          language: Language,
+          extension: Extension
         });
         QuestionTitle = "";
         Question = "";
         SubmitButton = null;
-        ReadMePath = null;
       });
     }, 1000)
   });

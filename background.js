@@ -56,26 +56,41 @@ import "./credentials.js";
       chrome.tabs.create({url: request.Authorization_URL});
     }
 
-    if (request.contentScriptQuery === "createREADME") {
-      console.log("receive createREADME Instruction");
+    if (request.contentScriptQuery === "create solution") {
+      console.log("receive create solution Instruction");
       try {
-        const owner = request.owner;
-        const repo = request.repo;
-        const path = request.path;
-        const AuthToken = request.authToken;
-        console.log("AuthToken received", AuthToken);
-        const message = request.message;
-        const content = request.content;
-        const createReadMeResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+        const createReadMeMessage = "create the folder for the question and write question information into a README.md";
+        const { contentScriptQuery, name, authToken, owner, repo, solutionNo, question, code, lanuage, extension } = request;
+        // const name = request.name;
+        // const owner = request.owner;
+        // const repo = request.repo;
+        // const AuthToken = request.authToken;
+        // const question = request.question;
+        // const solutionNo = request.solutionNo;
+
+        console.log("AuthToken received", authToken);
+        const createReadMeResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${name}/README.md`, {
           method: "PUT",
           headers: {
-            "Authorization": `Bearer ${AuthToken}`,
+            "Authorization": `Bearer ${authToken}`,
             "Accept": "application/vnd.github+json",
-            "X-GitHub-Api-Version": "2022-11-28"
           },
           body: JSON.stringify({
-            message: message,
-            content: btoa(content)
+            message: createReadMeMessage,
+            content: btoa(question)
+          })
+        });
+        const createSolutionMessage = `Create ${lanuage} ${solutionNo} for question ${name}`;
+
+        const createSolutionResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${name}/${solutionNo}/${name}.${extension}`, {
+          method: "PUT",
+          headers: {
+            "Authorization": `Bearer ${authToken}`,
+            "Accept": "application/vnd.github+json",
+          },
+          body: JSON.stringify({
+            message: createSolutionMessage,
+            content: btoa(code)
           })
         });
         console.log("createReadMeResponse", createReadMeResponse);
@@ -83,7 +98,7 @@ import "./credentials.js";
         const RepoInfoResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${AuthToken}`
+            "Authorization": `Bearer ${authToken}`
           }
         });
         console.log("RepoInfoResponse", RepoInfoResponse);
