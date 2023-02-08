@@ -1,8 +1,8 @@
 (async () => {
-  let SubmitButton;
-  let QuestionTitle;
+  let SubmitButton = null;
+  let QuestionTitle = "";
   let Question = "";
-  let ReadMePath;
+  let ReadMePath = null;
   const owner = (await chrome.storage.local.get("username")).username;
   const repo = (await chrome.storage.local.get('repository')).repository;
   const AuthToken = (await chrome.storage.local.get("auth_token")).auth_token;
@@ -19,16 +19,19 @@
         const buttons = document.getElementsByTagName('button');
         const div = document.getElementsByClassName("html");
         const childNodes = div[0].childNodes;
-        // console.log(childNodes);
+        console.log(childNodes);
         // console.log(typeof(childNodes));
         QuestionTitle = title;
-        Question += QuestionTitle + '\n';
+        Question += "# " + QuestionTitle + '\n';
         for (const [key, value] of Object.entries(childNodes)) {
-          if (value.textContent) {
-            Question += value.textContent
+          if (value.innerText && (value.innerText.includes("Sample Input") || value.innerText.includes("Sample Output"))) {
+            console.log('sample');
+            Question += "**" + value.innerText + "**"
           } else if (value.innerText) {
             Question += value.innerText;
-          }
+          } else if (value.textContent) {
+            Question += value.textContent
+          } 
         }
         const readMePath = `${QuestionTitle}/README.md`;
         ReadMePath = readMePath;
@@ -50,7 +53,6 @@
       console.log(request);
       SubmitButton.addEventListener('click', async function() {
         // This function will be executed when the button is clicked
-        console.log('Button was clicked!');
         chrome.runtime.sendMessage({
           contentScriptQuery: "createREADME",
           authToken: AuthToken,
@@ -59,7 +61,11 @@
           path: ReadMePath,
           message: createReadMeMessage,
           content: Question
-        })
+        });
+        QuestionTitle = "";
+        Question = "";
+        SubmitButton = null;
+        ReadMePath = null;
       });
     }, 1000)
   });
