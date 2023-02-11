@@ -61,20 +61,21 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
 
         const createSolutionMessage = `Create ${language} ${solutionNo} for question ${name}`;
         const changeSolutionMessage = `Change ${language} ${solutionNo} for question ${name}`;
-        const getSolutionResponse = await getContent(owner, repo, `${name}/${solutionNo}/${name}.${extension}`, authToken)
+        const getSolutionResponse = await getContent(owner, repo, `${name}/${solutionNo}/${name}${extension}`, authToken)
         const solutionData = await getSolutionResponse.json();
         const sha = solutionData.sha;
         console.log('sha', sha);
         if (getReadMeResponse.ok == true) {
-          const changeSolutionResponse = await updateContent(owner, repo, `${name}/${solutionNo}/${name}.${extension}`, sha, authToken, code, changeSolutionMessage);
+          const changeSolutionResponse = await updateContent(owner, repo, `${name}/${solutionNo}/${name}${extension}`, sha, authToken, code, changeSolutionMessage);
           console.log("changeSolutionResponse", changeSolutionResponse);
         } else {
-          const createSolutionResponse = await createContent(owner, repo, `${name}/${solutionNo}/${name}.${extension}`, authToken, code, createSolutionMessage); 
+          const createSolutionResponse = await createContent(owner, repo, `${name}/${solutionNo}/${name}${extension}`, authToken, code, createSolutionMessage); 
           console.log("createSolutionResponse", createSolutionResponse);
         }
       } catch(error) {
         console.log(error);
       }    
     }
+    return false;
   });  
 })();
