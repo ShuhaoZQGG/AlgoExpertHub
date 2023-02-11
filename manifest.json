@@ -44,7 +44,8 @@
       "resources": [
         "popup.js",
         "authorize.js",
-        "algoexpert.js"
+        "algoexpert.js",
+        "githubApiCalls.js"
       ]
     }
   ]
