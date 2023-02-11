@@ -1,6 +1,13 @@
 (async () => {
   const LanguageMapping= {
-    "Python": ".py"
+    "Python": ".py",
+    "JavaScript": ".js",
+    "TypeScript": ".ts",
+    "C#": ".cs",
+    "Go": ".go",
+    "Java": ".java",
+    "Kotlin": ".kts",
+    "Switf": ".swift"
   }
 
   let SubmitButton = null;
@@ -22,7 +29,6 @@
   const solutionDivClass = "_5Y_y5dN7pkjcKB22vQiZ"
   const codeClass = "cm-content"
   const titleClass = "wBpuKvBGWdd7o3KaUFOQ";
-  const languageClass = "oWoHqZGV1RWlIC1vbJQA";
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     // Get all button elements
     setTimeout(() => {
@@ -37,11 +43,8 @@
         const questionDivChildNodes = questionDiv[0].childNodes;
         const solutionDiv = document.getElementsByClassName(solutionDivClass)
         const codeDiv = document.getElementsByClassName(codeClass);
-        const language = document.getElementsByClassName(languageClass);
-        Language = language[0].innerText;
         SolutionDiv = solutionDiv;
         CodeDiv = codeDiv;
-        Extension = LanguageMapping[Language];
         QuestionTitle = title;
         Question += "# " + QuestionTitle + '\n';
         for (const [key, value] of Object.entries(questionDivChildNodes)) {
@@ -73,9 +76,12 @@
             SolutionButton = value.innerText;
           }
         }
-
+        const languageClass = "oWoHqZGV1RWlIC1vbJQA";
         const resultClassName = "jq63ZT06FaZykTzWRxJS";
         setTimeout(() => {
+          const language = document.getElementsByClassName(languageClass);
+          Language = language[0].innerText;
+          Extension = LanguageMapping[Language];
           const resultPara = document.getElementsByClassName(resultClassName);
           if (resultPara) {
             const resultText = resultPara[0].innerText;
@@ -102,6 +108,7 @@
         }, 1000)
       });
     }, 1000)
+    return false;
   });
 })();
 
