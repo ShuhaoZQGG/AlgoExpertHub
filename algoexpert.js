@@ -29,6 +29,8 @@
       if (request.type="currentTab") {
         Question = "";
         Code = "";
+        QuestionTitle = "";
+        Question = "";
         const title = document.getElementsByClassName(titleClass)[0].innerText;
         const buttons = document.getElementsByTagName('button');
         const questionDiv = document.getElementsByClassName(questionClass);
@@ -44,7 +46,6 @@
         Question += "# " + QuestionTitle + '\n';
         for (const [key, value] of Object.entries(questionDivChildNodes)) {
           if (value.innerText && (value.innerText.includes("Sample Input") || value.innerText.includes("Sample Output"))) {
-            console.log('sample');
             Question += "**" + value.innerText + "**"
           } else if (value.textContent) {
             Question += value.textContent;
@@ -65,37 +66,44 @@
         }
       }
       SubmitButton.addEventListener('click', async function() {
+        Code = CodeDiv[CodeDiv.length-1].innerText;
+
         for (const [key, value] of Object.entries(SolutionDiv[0].childNodes)) {
           if(value.classList.length == 2) {
             SolutionButton = value.innerText;
           }
         }
 
-        Code = CodeDiv[CodeDiv.length-1].innerText;
-        console.log(Code);
-
-        console.log(SolutionButton);
-        // This function will be executed when the button is clicked
-        chrome.runtime.sendMessage({
-          contentScriptQuery: "create solution",
-          name: QuestionTitle,
-          authToken: AuthToken,
-          owner: owner,
-          repo: repo,
-          solutionNo: SolutionButton,
-          question: Question,
-          code: Code,
-          language: Language,
-          extension: Extension
-        });
-        QuestionTitle = "";
-        Question = "";
-        SubmitButton = null;
-
-
+        const resultClassName = "jq63ZT06FaZykTzWRxJS";
         setTimeout(() => {
-          window.location.reload();
-        }, 3000);
+          const resultPara = document.getElementsByClassName(resultClassName);
+          if (resultPara) {
+            const resultText = resultPara[0].innerText;
+            if (resultText.includes("Congratulations!")) {
+                      // This function will be executed when the button is clicked
+              console.log('send request');
+              chrome.runtime.sendMessage({
+                contentScriptQuery: "create solution",
+                name: QuestionTitle,
+                authToken: AuthToken,
+                owner: owner,
+                repo: repo,
+                solutionNo: SolutionButton,
+                question: Question,
+                code: Code,
+                language: Language,
+                extension: Extension
+              });
+
+            } else {
+              console.log("solution is wrong, not sending anything");
+            }
+          }
+        }, 1000)
+
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 5000);
       });
     }, 1000)
   });
