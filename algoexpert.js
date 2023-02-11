@@ -100,10 +100,6 @@
             }
           }
         }, 1000)
-
-        // setTimeout(() => {
-        //   window.location.reload();
-        // }, 5000);
       });
     }, 1000)
   });

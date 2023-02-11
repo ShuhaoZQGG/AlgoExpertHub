@@ -1,3 +1,4 @@
+import { getAuthorize, getUserInfo, getRepoInfo, createRepo } from "./githubApiCalls.js";
 const oauth = {
   async init() {
     this.CLIENT_ID = (await chrome.storage.local.get('client_id')).client_id;
@@ -32,9 +33,7 @@ const oauth = {
       params.append("client_id", client_id);
       params.append("redirect_url", this.ACCESS_TOKEN_URL);
       params.append("scope", "repo");
-      const AuthorizeResponse = await fetch(`https://github.com/login/oauth/authorize?${params.toString()}`, {
-        method: "GET",
-      })
+      const AuthorizeResponse = await getAuthorize(params);
       console.log(AuthorizeResponse);
       console.log(AuthorizeResponse.url);
 
@@ -49,12 +48,7 @@ const oauth = {
   async getAuthorizedUser() {
     await this.init();
     const AuthToken = this.AUTH_TOKEN;
-    const UserInfoResposne = await fetch("https://api.github.com/user", {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${AuthToken}`
-      }
-    });
+    const UserInfoResposne = await getUserInfo(AuthToken);
     const UserInfoData = await UserInfoResposne.json();
     const Username = UserInfoData.login;
     const AvartarUrl = UserInfoData.avatar_url
@@ -72,12 +66,7 @@ const oauth = {
     const RepositoryElement = document.getElementById("repository");
     const RepositoryUnlink = document.getElementById("repository_unlink");
     const AuthToken = this.AUTH_TOKEN;
-    const RepoInfoResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${AuthToken}`
-      }
-    });
+    const RepoInfoResponse = await getRepoInfo(owner, repo, AuthToken);
     
     const RepoInfoData = await RepoInfoResponse.json();
     // check if the reponse is ok (repo exists)
@@ -96,19 +85,7 @@ const oauth = {
     else if (RepoInfoResponse.status === 404) {
       console.log(AuthToken);
       try {
-        const CreateRepoResposne = await fetch(`https://api.github.com/user/repos`, {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${AuthToken}`,
-            "Content-Type": "application/json",
-            "accept": "application/json"
-          },
-          body: JSON.stringify({
-            name: repo,
-            description: "This is the test for AlgoExpertHub Extension",
-            private: false,
-          })
-        });
+        const CreateRepoResposne = await createRepo(repo, AuthToken)
         // const CreateRepoData = await CreateRepoResposne.json();
         if (CreateRepoResposne.ok) {
           RepositoryElement.textContent = repo;
