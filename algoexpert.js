@@ -26,7 +26,6 @@
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     // Get all button elements
     setTimeout(() => {
-      console.log(request);
       if (request.type="currentTab") {
         Question = "";
         Code = "";
@@ -40,13 +39,7 @@
         Language = language[0].innerText;
         SolutionDiv = solutionDiv;
         CodeDiv = codeDiv;
-        console.log(CodeDiv[CodeDiv.length-1]);
-        console.log(solutionDiv);
-        console.log(Language);
         Extension = LanguageMapping[Language];
-        console.log(Extension);
-        // console.log(childNodes);
-        // console.log(typeof(childNodes));
         QuestionTitle = title;
         Question += "# " + QuestionTitle + '\n';
         for (const [key, value] of Object.entries(questionDivChildNodes)) {
@@ -59,9 +52,6 @@
             Question += value.innerText
           } 
         }
-        console.log(typeof(Question));
-        console.log(QuestionTitle);
-        console.log(Question);
         // Iterate through the buttons
         for (const button of buttons) {
           // Get the span element inside the button
@@ -101,6 +91,11 @@
         QuestionTitle = "";
         Question = "";
         SubmitButton = null;
+
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
       });
     }, 1000)
   });

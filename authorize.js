@@ -61,8 +61,6 @@ const oauth = {
     if (UserInfoResposne.ok === true) {
       await chrome.storage.local.set({"username": Username});
       await chrome.storage.local.set({"avatar": AvartarUrl});
-      console.log(UserInfoResposne);
-      console.log(UserInfoData);
     }
   },
 
@@ -92,8 +90,6 @@ const oauth = {
       RepositoryButton.setAttribute("hidden", "");
       RepositoryElement.removeAttribute("hidden");
       RepositoryUnlink.removeAttribute("hidden");
-      console.log(RepoInfoResponse);
-      console.log(RepoInfoData);
     }
 
     // if not, create a new repo and change chrome storage and change dom
@@ -113,7 +109,7 @@ const oauth = {
             private: false,
           })
         });
-        const CreateRepoData = await CreateRepoResposne.json();
+        // const CreateRepoData = await CreateRepoResposne.json();
         if (CreateRepoResposne.ok) {
           RepositoryElement.textContent = repo;
           await chrome.storage.local.set({"repository": repo});
@@ -121,9 +117,7 @@ const oauth = {
           RepositoryInput.setAttribute("hidden", "");
           RepositoryButton.setAttribute("hidden", "");
           RepositoryElement.removeAttribute("hidden");
-          RepositoryUnlink.removeAttribute("hidden");
-          console.log(CreateRepoResposne);
-          console.log(CreateRepoData);      
+          RepositoryUnlink.removeAttribute("hidden"); 
        }
       } catch(e) {
         console.error(e);
