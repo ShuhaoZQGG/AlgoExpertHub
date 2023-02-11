@@ -63,7 +63,7 @@ async function getContent(owner, repo, filePath, authToken) {
         });
 }
 
-async function createContent(owner, repo, filePath, authToken, content) {
+async function createContent(owner, repo, filePath, authToken, content, message) {
   return await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
             method: "PUT",
             headers: {
@@ -71,13 +71,13 @@ async function createContent(owner, repo, filePath, authToken, content) {
               "Accept": "application/vnd.github+json",
             },
             body: JSON.stringify({
-              message: createReadMeMessage,
+              message: message,
               content: btoa(content)
             })
           });
 }
 
-async function updateContent(owner, repo, filePath, sha, authToken, content) {
+async function updateContent(owner, repo, filePath, sha, authToken, content, message) {
   return await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
     method: "PUT",
     headers: {
@@ -85,7 +85,7 @@ async function updateContent(owner, repo, filePath, sha, authToken, content) {
       "Accept": "application/vnd.github+json",
     },
     body: JSON.stringify({
-      message: changeSolutionMessage,
+      message: message,
       content: btoa(content),
       sha: sha
     })
