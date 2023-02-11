@@ -76,6 +76,12 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
         console.log(error);
       }    
     }
+    
+    /**
+     * @description return false to close the chrome.runtime.onMessage to close the channel to avoid the error
+     * @error Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, 
+     *        but the message channel closed before a response was received
+     */
     return false;
   });  
 })();
