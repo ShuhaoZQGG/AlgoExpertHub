@@ -20,7 +20,7 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
         await getUserInfo(AuthToken);
      }
 
-     if (tab.url.startsWith("https://www.algoexpert.io/questions")) {
+     if (tab.url.startsWith("https://www.algoexpert.io/questions/")) {
       chrome.tabs.sendMessage(
           tabId,
           {
@@ -55,7 +55,7 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
         const getReadMeResponse = await getContent(owner, repo, `${name}/README.md`, authToken);
         console.log('getReadMeResponse', getReadMeResponse);
         if (getReadMeResponse.ok != true) {
-          const createReadMeResponse = await createContent(owner, repo, `${name}/README.md`, authToken, question);
+          const createReadMeResponse = await createContent(owner, repo, `${name}/README.md`, authToken, question, createReadMeMessage);
           console.log("createReadMeResponse", createReadMeResponse);
         } else {}
 
@@ -66,10 +66,10 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
         const sha = solutionData.sha;
         console.log('sha', sha);
         if (getReadMeResponse.ok == true) {
-          const changeSolutionResponse = await updateContent(owner, repo, `${name}/${solutionNo}/${name}.${extension}`, sha, authToken, code);
+          const changeSolutionResponse = await updateContent(owner, repo, `${name}/${solutionNo}/${name}.${extension}`, sha, authToken, code, changeSolutionMessage);
           console.log("changeSolutionResponse", changeSolutionResponse);
         } else {
-          const createSolutionResponse = await createContent(owner, repo, `${name}/${solutionNo}/${name}.${extension}`, authToken, code); 
+          const createSolutionResponse = await createContent(owner, repo, `${name}/${solutionNo}/${name}.${extension}`, authToken, code, createSolutionMessage); 
           console.log("createSolutionResponse", createSolutionResponse);
         }
       } catch(error) {
