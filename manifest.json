@@ -23,7 +23,6 @@
   },
   "permissions": [
     "storage",
-    "identity",
     "tabs"
   ],
   "content_scripts": [
