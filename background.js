@@ -3,6 +3,20 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
 (async () => {
   const client_id = (await chrome.storage.local.get('client_id')).client_id;
   const client_secret = (await chrome.storage.local.get('client_secret')).client_secret;
+  chrome.tabs.onActivated.addListener(function(activeInfo) {
+    chrome.tabs.get(activeInfo.tabId, (tab) => {
+      if (tab.url.startsWith("https://www.algoexpert.io/questions/")) {
+      chrome.tabs.sendMessage(
+          tabId,
+          {
+            type: "currentTab",
+            text: "algo expert is focused",
+            tabId: tabId
+          }
+      )
+    }
+  })
+  });
   chrome.tabs.onUpdated.addListener(async function(tabId, changeInfo, tab) {
     // Check if the tab's URL has changed
     if (
