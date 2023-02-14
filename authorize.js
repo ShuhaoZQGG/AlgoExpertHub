@@ -26,7 +26,7 @@ const oauth = {
     await this.init();
     try {
       const AuthorizeButton = document.getElementById("authorize");
-      AuthorizeButton.removeAttribute("hidden");
+      AuthorizeButton.classList.remove("hidden");
       const params = new URLSearchParams();
       const client_id = this.CLIENT_ID;
       console.log(client_id);
@@ -74,11 +74,11 @@ const oauth = {
     if (RepoInfoResponse.ok === true) {
       RepositoryElement.textContent = repo;
       await chrome.storage.local.set({"repository": repo});
-      RepositoryLabel.setAttribute("hidden", "");
-      RepositoryInput.setAttribute("hidden", "");
-      RepositoryButton.setAttribute("hidden", "");
-      RepositoryElement.removeAttribute("hidden");
-      RepositoryUnlink.removeAttribute("hidden");
+      RepositoryLabel.classList.add("hidden");
+      RepositoryInput.classList.add("hidden");
+      RepositoryButton.classList.add("hidden");
+      RepositoryElement.classList.remove("hidden");
+      RepositoryUnlink.classList.remove("hidden");
     }
 
     // if not, create a new repo and change chrome storage and change dom
@@ -90,11 +90,11 @@ const oauth = {
         if (CreateRepoResposne.ok) {
           RepositoryElement.textContent = repo;
           await chrome.storage.local.set({"repository": repo});
-          RepositoryLabel.setAttribute("hidden", "");
-          RepositoryInput.setAttribute("hidden", "");
-          RepositoryButton.setAttribute("hidden", "");
-          RepositoryElement.removeAttribute("hidden");
-          RepositoryUnlink.removeAttribute("hidden"); 
+          RepositoryLabel.classList.add("hidden");
+          RepositoryInput.classList.add("hidden");
+          RepositoryButton.classList.add("hidden");
+          RepositoryElement.classList.remove("hidden");
+          RepositoryUnlink.classList.remove("hidden"); 
        }
       } catch(e) {
         console.error(e);

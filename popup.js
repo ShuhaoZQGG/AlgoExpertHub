@@ -27,7 +27,7 @@ import oauth from './authorize.js';
     document.body.appendChild(AvatarImgElement);
   } else {
     console.log(AuthToken);
-    AuthorizeButton.removeAttribute("hidden");
+    AuthorizeButton.classList.remove("hidden");
   }
   AuthorizeButton.addEventListener("click", async () => {
     await oauth.begin();
@@ -36,18 +36,18 @@ import oauth from './authorize.js';
   if (Repository) {
     RepositoryElement.textContent = Repository;
     console.log(RepositoryElement);
-    RepositoryElement.removeAttribute("hidden");
-    RepositoryUnlink.removeAttribute("hidden");
-    RepositoryLabel.setAttribute("hidden", "");
-    RepositoryInput.setAttribute("hidden", "");
-    RepositoryButton.setAttribute("hidden", "");
+    RepositoryElement.classList.remove("hidden");
+    RepositoryUnlink.classList.remove("hidden");
+    RepositoryLabel.classList.add("hidden");
+    RepositoryInput.classList.add("hidden");
+    RepositoryButton.classList.add("hidden");
   } else {
     if (Username) {
-      RepositoryElement.setAttribute("hidden", "");
-      RepositoryUnlink.setAttribute("hidden", "");
-      RepositoryLabel.removeAttribute("hidden");
-      RepositoryInput.removeAttribute("hidden");
-      RepositoryButton.removeAttribute("hidden");
+      RepositoryElement.classList.add("hidden");
+      RepositoryUnlink.classList.add("hidden");
+      RepositoryLabel.classList.remove("hidden");
+      RepositoryInput.classList.remove("hidden");
+      RepositoryButton.classList.remove("hidden");
       RepositoryButton.addEventListener("click", async () => {
         await oauth.getRepoInfo(Username, RepositoryInput.value);
       })
@@ -55,10 +55,10 @@ import oauth from './authorize.js';
   }
   RepositoryUnlink.addEventListener("click", async () => {
     await chrome.storage.local.set({"repository": ""});
-    RepositoryElement.setAttribute("hidden", "");
-    RepositoryUnlink.setAttribute("hidden", "");
-    RepositoryLabel.removeAttribute("hidden");
-    RepositoryInput.removeAttribute("hidden");
-    RepositoryButton.removeAttribute("hidden");
+    RepositoryElement.classList.add("hidden");
+    RepositoryUnlink.classList.add("hidden");
+    RepositoryLabel.classList.remove("hidden");
+    RepositoryInput.classList.remove("hidden");
+    RepositoryButton.classList.remove("hidden");
   })
 })();
