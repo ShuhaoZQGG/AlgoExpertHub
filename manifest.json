@@ -35,7 +35,8 @@
       "js": [
         "authorize.js",
         "algoexpert.js"
-      ]
+      ],
+      "type": "module"
     }
   ],
   "web_accessible_resources": [
@@ -46,7 +47,8 @@
         "authorize.js",
         "algoexpert.js",
         "githubApiCalls.js"
-      ]
+      ],
+      "type": "module"
     }
   ]
 }
