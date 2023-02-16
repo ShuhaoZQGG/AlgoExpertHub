@@ -21,10 +21,13 @@ import oauth from './authorize.js';
     Username = (await chrome.storage.local.get("username")).username;
     const UsernameElement = document.createElement("h6");
     UsernameElement.textContent = `Welcome ${Username}!`;
-    document.body.appendChild(UsernameElement);
+    const brElement = document.querySelector('br');
+    brElement.insertAdjacentElement("beforebegin", UsernameElement);
+    // document.body.appendChild(UsernameElement);
     const AvatarImgElement = document.createElement("img");
     AvatarImgElement.src=Avatar;
-    document.body.appendChild(AvatarImgElement);
+    brElement.insertAdjacentElement("beforebegin", AvatarImgElement);
+    // document.body.appendChild(AvatarImgElement);
   } else {
     console.log(AuthToken);
     AuthorizeButton.classList.remove("hidden");
