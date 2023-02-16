@@ -9,13 +9,10 @@ import oauth from './authorize.js';
   const RepositoryInput = document.getElementById("repository_input");
   const RepositoryButton = document.getElementById("repository_button");
   const RepositoryUnlink = document.getElementById("repository_unlink");
-
-  console.log(Repository);
 // TODO: Check auth token, if it is null, show authorize tab
 // if not null, try to authorize, if success, show user info
 // if fail, show authorize tab
   if (AuthToken) {
-    console.log(AuthToken);
     await oauth.begin();
     const Avatar = (await chrome.storage.local.get("avatar")).avatar;
     Username = (await chrome.storage.local.get("username")).username;
@@ -29,7 +26,6 @@ import oauth from './authorize.js';
     brElement.insertAdjacentElement("beforebegin", AvatarImgElement);
     // document.body.appendChild(AvatarImgElement);
   } else {
-    console.log(AuthToken);
     AuthorizeButton.classList.remove("hidden");
   }
   AuthorizeButton.addEventListener("click", async () => {
@@ -38,7 +34,6 @@ import oauth from './authorize.js';
 
   if (Repository) {
     RepositoryElement.textContent = Repository;
-    console.log(RepositoryElement);
     RepositoryElement.classList.remove("hidden");
     RepositoryUnlink.classList.remove("hidden");
     RepositoryLabel.classList.add("hidden");

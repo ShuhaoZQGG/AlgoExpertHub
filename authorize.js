@@ -29,17 +29,11 @@ const oauth = {
       AuthorizeButton.classList.remove("hidden");
       const params = new URLSearchParams();
       const client_id = this.CLIENT_ID;
-      console.log(client_id);
       params.append("client_id", client_id);
       params.append("redirect_url", this.ACCESS_TOKEN_URL);
       params.append("scope", "repo");
       const AuthorizeResponse = await getAuthorize(params);
-      console.log(AuthorizeResponse);
-      console.log(AuthorizeResponse.url);
-
       await chrome.runtime.sendMessage({"Authorization_URL": AuthorizeResponse.url});
-
-      // await chrome.runtime.sendMessage({"name": "AuthorizeUrlMessage", "AuthorizeUrl": AuthorizeResponse.url });
     } catch (error) {
       console.error(error);
     }
