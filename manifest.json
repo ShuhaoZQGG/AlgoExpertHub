@@ -22,7 +22,8 @@
   },
   "permissions": [
     "storage",
-    "tabs"
+    "tabs",
+    "scripting"
   ],
   "content_scripts": [
     {   
@@ -34,8 +35,7 @@
         "authorize.js",
         "algoexpert.js"
       ],
-      "type": "module",
-      "run_at": "document_start"
+      "type": "module"    
     }
   ],
   "web_accessible_resources": [
