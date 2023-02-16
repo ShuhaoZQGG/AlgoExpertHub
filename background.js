@@ -4,7 +4,9 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
   const client_id = (await chrome.storage.local.get('client_id')).client_id;
   const client_secret = (await chrome.storage.local.get('client_secret')).client_secret;
   chrome.tabs.onActivated.addListener(function(activeInfo) {
+    console.log(activeInfo);
     chrome.tabs.get(activeInfo.tabId, (tab) => {
+      const tabId = activeInfo.tabId;
       if (tab.url.startsWith("https://www.algoexpert.io/questions/")) {
       chrome.tabs.sendMessage(
           tabId,
@@ -19,8 +21,9 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
   });
   chrome.tabs.onUpdated.addListener(async function(tabId, changeInfo, tab) {
     // Check if the tab's URL has changed
+    console.log(changeInfo);
     if (
-      changeInfo.url
+      changeInfo.status === "complete"
     ) {
      if (tab.url && tab.url.match(/\?code=([\w\/\-]+)/)){
         const code = tab.url.match(/\?code=([\w\/\-]+)/)[1];
@@ -54,6 +57,7 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
     chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
       if (request.Authorization_URL) {
         chrome.tabs.create({url: request.Authorization_URL});
+        return false;
       }
   
       if (request.contentScriptQuery === "create solution") {
@@ -89,14 +93,15 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
           }
         } catch(error) {
           console.log(error);
-        }    
+        }
+        /**
+         * @description return false to close the chrome.runtime.onMessage to close the channel to avoid the error
+         * @error Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, 
+         *        but the message channel closed before a response was received
+         */
+        return false;
       }
-      
-      /**
-       * @description return false to close the chrome.runtime.onMessage to close the channel to avoid the error
-       * @error Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, 
-       *        but the message channel closed before a response was received
-       */
+
       return false;
     });  
   } catch (error) {

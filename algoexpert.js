@@ -106,15 +106,12 @@
                 console.log("solution is wrong, not sending anything");
               }
             }
+            return true;
           }, 1000)
         });
+        return true;
       }, 1000)
-  
-      /**
-       * @description return false to close the chrome.runtime.onMessage to close the channel to avoid the error
-       * @error Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, 
-       *        but the message channel closed before a response was received
-       */
+
       return false;
     });
   } catch (error) {
