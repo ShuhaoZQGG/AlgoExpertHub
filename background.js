@@ -1,40 +1,59 @@
 import "./credentials.js";
 import { createAuthToken, getUserInfo, getContent, createContent, updateContent } from "./githubApiCalls.js";
 (async () => {
+  let Owner = (await chrome.storage.local.get("username")).username;
+  let Repo = (await chrome.storage.local.get('repository')).repository;
+  let AuthToken = (await chrome.storage.local.get("auth_token")).auth_token;
+  // When an existing extension refreshed, reload content scripts for all tabs that match the permissions
+  chrome.runtime.onInstalled.addListener(async () => {
+    for (const cs of chrome.runtime.getManifest().content_scripts) {
+      console.log(cs);
+      for (const tab of await chrome.tabs.query({url: cs.matches})) {
+        chrome.scripting.executeScript({
+          target: {tabId: tab.id},
+          files: cs.js,
+        });
+      }
+    }
+  });
+  
   const client_id = (await chrome.storage.local.get('client_id')).client_id;
   const client_secret = (await chrome.storage.local.get('client_secret')).client_secret;
-  chrome.tabs.onActivated.addListener(function(activeInfo) {
-    console.log(activeInfo);
-    chrome.tabs.get(activeInfo.tabId, (tab) => {
-      const tabId = activeInfo.tabId;
-      if (tab.url.startsWith("https://www.algoexpert.io/questions/")) {
-      chrome.tabs.sendMessage(
-          tabId,
-          {
-            type: "currentTab",
-            text: "algo expert is focused",
-            tabId: tabId
-          }
-      )
-    }
-  })
-  });
+  // chrome.tabs.onActivated.addListener(function(activeInfo) {
+  //   chrome.tabs.get(activeInfo.tabId, (tab) => {
+  //     const tabId = activeInfo.tabId;
+  //     if (tab.url.startsWith("https://www.algoexpert.io/questions/")) {
+  //     chrome.tabs.sendMessage(
+  //         tabId,
+  //         {
+  //           type: "currentTab",
+  //           text: "algo expert is focused",
+  //           tabId: tabId
+  //         }
+  //     )
+  //   }
+  // })
+  // });
   chrome.tabs.onUpdated.addListener(async function(tabId, changeInfo, tab) {
     // Check if the tab's URL has changed
-    console.log(changeInfo);
     if (
       changeInfo.status === "complete"
     ) {
      if (tab.url && tab.url.match(/\?code=([\w\/\-]+)/)){
         const code = tab.url.match(/\?code=([\w\/\-]+)/)[1];
         await chrome.storage.local.set({"code": code});
-        const AuthTokenResponse = await createAuthToken(client_id, client_secret, code);
-        const AuthTokenData = await AuthTokenResponse.json();
-        console.log(AuthTokenData);
-        const AuthToken = AuthTokenData.access_token;
-        console.log(AuthToken);
-        await chrome.storage.local.set({"auth_token": AuthToken});
-        await getUserInfo(AuthToken);
+        if (!AuthToken) {
+          const AuthTokenResponse = await createAuthToken(client_id, client_secret, code);
+          const AuthTokenData = await AuthTokenResponse.json();
+          AuthToken = AuthTokenData.access_token;
+          await chrome.storage.local.set({"auth_token": AuthToken});
+        }
+
+        if (!Owner) {
+          const UserInfo = await getUserInfo(AuthToken);
+          const UserInfoData = await UserInfo.json();
+          Owner = UserInfoData.login;
+        }
      }
 
      if (tab.url.startsWith("https://www.algoexpert.io/questions/")) {
@@ -50,9 +69,7 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
     }
   });
 
-  let queryOptions = { active: true, lastFocusedWindow: true };
   // `tab` will either be a `tabs.Tab` instance or `undefined`.
-  console.log(await chrome.tabs.query(queryOptions));
   try {
     chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
       if (request.Authorization_URL) {
@@ -61,6 +78,9 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
       }
   
       if (request.contentScriptQuery === "create solution") {
+        Owner = (await chrome.storage.local.get("username")).username;
+        Repo = (await chrome.storage.local.get('repository')).repository;
+        AuthToken = (await chrome.storage.local.get("auth_token")).auth_token;
         console.log("receive create solution Instruction");
         try {
           /**
@@ -69,39 +89,47 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
            * */ 
                   
           const createReadMeMessage = "create the folder for the question and write question information into a README.md";
-          const { contentScriptQuery, name, authToken, owner, repo, solutionNo, question, code, language, extension } = request;
-          console.log("AuthToken received", authToken);
-          const getReadMeResponse = await getContent(owner, repo, `${name}/README.md`, authToken);
+          const { contentScriptQuery, name, solutionNo, question, code, language, extension } = request;
+          console.log("AuthToken received", AuthToken);
+          const getReadMeResponse = await getContent(Owner, Repo, `${name}/README.md`, AuthToken);
           console.log('getReadMeResponse', getReadMeResponse);
           if (getReadMeResponse.ok != true) {
-            const createReadMeResponse = await createContent(owner, repo, `${name}/README.md`, authToken, question, createReadMeMessage);
+            const createReadMeResponse = await createContent(Owner, Repo, `${name}/README.md`, AuthToken, question, createReadMeMessage);
             console.log("createReadMeResponse", createReadMeResponse);
           } else {}
   
           const createSolutionMessage = `Create ${language} ${solutionNo} for question ${name}`;
           const changeSolutionMessage = `Change ${language} ${solutionNo} for question ${name}`;
-          const getSolutionResponse = await getContent(owner, repo, `${name}/${solutionNo}/${name}${extension}`, authToken)
+          const getSolutionResponse = await getContent(Owner, Repo, `${name}/${solutionNo}/${name}${extension}`, AuthToken)
           const solutionData = await getSolutionResponse.json();
           const sha = solutionData.sha;
           console.log('sha', sha);
           if (getReadMeResponse.ok == true) {
-            const changeSolutionResponse = await updateContent(owner, repo, `${name}/${solutionNo}/${name}${extension}`, sha, authToken, code, changeSolutionMessage);
+            const changeSolutionResponse = await updateContent(Owner, Repo, `${name}/${solutionNo}/${name}${extension}`, sha, AuthToken, code, changeSolutionMessage);
             console.log("changeSolutionResponse", changeSolutionResponse);
           } else {
-            const createSolutionResponse = await createContent(owner, repo, `${name}/${solutionNo}/${name}${extension}`, authToken, code, createSolutionMessage); 
-            console.log("createSolutionResponse", createSolutionResponse);
+            const createSolutionResponse = await createContent(Owner, Repo, `${name}/${solutionNo}/${name}${extension}`, AuthToken, code, createSolutionMessage); 
+            if (createSolutionResponse.status != '200' || createSolutionResponse.status != '201') {
+              throw new Error("create solution failed");
+            } else {
+              console.log("createSolutionResponse", createSolutionResponse);
+            }
           }
+
+          sendResponse("ok");
+          return true;
         } catch(error) {
+          sendResponse("error");
           console.log(error);
+          return false;
         }
         /**
-         * @description return false to close the chrome.runtime.onMessage to close the channel to avoid the error
+         * @description return true for ascyncronous functions
          * @error Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, 
          *        but the message channel closed before a response was received
          */
-        return false;
       }
-
+      sendResponse("finishied");
       return false;
     });  
   } catch (error) {
