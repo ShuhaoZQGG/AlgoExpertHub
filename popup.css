@@ -86,3 +86,18 @@ h6 {
 .hidden {
   display: none;
 }
+
+.icons-container {
+  color: #1f1f1f; /* set the color to white */
+  background-color: #fff; /* set the background color to a dark gray */
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.icons-container .fa-envelope,
+.icons-container .fa-github,
+.icons-container .fa-linkedin {
+  font-size: 24px; /* set the font size */
+  padding: 8px; /* add some padding */
+}
