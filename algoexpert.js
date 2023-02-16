@@ -1,4 +1,6 @@
 (async () => {
+  console.log("Content script loaded.");
+
   const LanguageMapping= {
     "Python": ".py",
     "JavaScript": ".js",
@@ -19,12 +21,6 @@
   let SolutionButton = null;
   let Language = "";
   let Extension = "";
-  const owner = (await chrome.storage.local.get("username")).username;
-  const repo = (await chrome.storage.local.get('repository')).repository;
-  const AuthToken = (await chrome.storage.local.get("auth_token")).auth_token;
-  // console.log("AuthToken", AuthToken);
-  // console.log("usename", owner);
-  // console.log("repository name", repo);
   const questionClass = "html";
   const solutionDivClass = "_5Y_y5dN7pkjcKB22vQiZ"
   const codeClass = "cm-content"
@@ -87,22 +83,23 @@
             if (resultPara) {
               const resultText = resultPara[0].innerText;
               if (resultText.includes("Congratulations!")) {
-                        // This function will be executed when the button is clicked
+                // This function will be executed when the button is clicked
                 console.log('send request');
-                chrome.runtime.sendMessage({
-                  contentScriptQuery: "create solution",
-                  name: QuestionTitle,
-                  authToken: AuthToken,
-                  owner: owner,
-                  repo: repo,
-                  solutionNo: SolutionButton,
-                  question: Question,
-                  code: Code,
-                  language: Language,
-                  extension: Extension
-                });
-  
+                if (chrome.runtime?.id) {
+                  chrome.runtime.sendMessage({
+                    contentScriptQuery: "create solution",
+                    name: QuestionTitle,
+                    solutionNo: SolutionButton,
+                    question: Question,
+                    code: Code,
+                    language: Language,
+                    extension: Extension
+                  });
+
+                  sendResponse("ok");
+                }
               } else {
+                sendResponse("error");
                 console.log("solution is wrong, not sending anything");
               }
             }
@@ -112,11 +109,12 @@
         return true;
       }, 1000)
 
+      sendResponse("finished");
       return false;
     });
   } catch (error) {
+    sendResponse("error");
     console.log(error);
-    window.location.reload();
   }
 })();
 
