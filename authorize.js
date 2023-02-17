@@ -79,7 +79,6 @@ const oauth = {
 
     // if not, create a new repo and change chrome storage and change dom
     else if (RepoInfoResponse.status === 404) {
-      console.log(AuthToken);
       try {
         const CreateRepoResposne = await createRepo(repo, AuthToken)
         // const CreateRepoData = await CreateRepoResposne.json();

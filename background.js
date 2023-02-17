@@ -7,7 +7,6 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
   // When an existing extension refreshed, reload content scripts for all tabs that match the permissions
   chrome.runtime.onInstalled.addListener(async () => {
     for (const cs of chrome.runtime.getManifest().content_scripts) {
-      console.log(cs);
       for (const tab of await chrome.tabs.query({url: cs.matches})) {
         chrome.scripting.executeScript({
           target: {tabId: tab.id},
@@ -73,7 +72,6 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
         Owner = (await chrome.storage.local.get("username")).username;
         Repo = (await chrome.storage.local.get('repository')).repository;
         AuthToken = (await chrome.storage.local.get("auth_token")).auth_token;
-        console.log("receive create solution Instruction");
         try {
           /**
            *  @todo get file path: if readme is already created: skip it
@@ -84,7 +82,6 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
           const { contentScriptQuery, name, solutionNo, question, code, language, extension } = request;
           console.log("AuthToken received", AuthToken);
           const getReadMeResponse = await getContent(Owner, Repo, `${name}/README.md`, AuthToken);
-          console.log('getReadMeResponse', getReadMeResponse);
           if (getReadMeResponse.ok != true) {
             const createReadMeResponse = await createContent(Owner, Repo, `${name}/README.md`, AuthToken, question, createReadMeMessage);
             console.log("createReadMeResponse", createReadMeResponse);
@@ -95,7 +92,6 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
           const getSolutionResponse = await getContent(Owner, Repo, `${name}/${solutionNo}/${name}${extension}`, AuthToken)
           const solutionData = await getSolutionResponse.json();
           const sha = solutionData.sha;
-          console.log('sha', sha);
           if (getReadMeResponse.ok == true) {
             const changeSolutionResponse = await updateContent(Owner, Repo, `${name}/${solutionNo}/${name}${extension}`, sha, AuthToken, code, changeSolutionMessage);
             console.log("changeSolutionResponse", changeSolutionResponse);

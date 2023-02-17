@@ -1,6 +1,4 @@
 (async () => {
-  console.log("Content script loaded.");
-
   const LanguageMapping= {
     "Python": ".py",
     "JavaScript": ".js",
@@ -85,7 +83,6 @@
               const resultText = resultPara[0].innerText;
               if (resultText.includes("Congratulations!")) {
                 // This function will be executed when the button is clicked
-                console.log('send request');
                 if (chrome.runtime?.id) {
                   chrome.runtime.sendMessage({
                     contentScriptQuery: "create solution",
