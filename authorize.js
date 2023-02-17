@@ -33,7 +33,9 @@ const oauth = {
       params.append("redirect_url", this.ACCESS_TOKEN_URL);
       params.append("scope", "repo");
       const AuthorizeResponse = await getAuthorize(params);
-      await chrome.runtime.sendMessage({"Authorization_URL": AuthorizeResponse.url});
+      await chrome.runtime.sendMessage({"Authorization_URL": AuthorizeResponse.url}, function(response) {
+        console.log(response);
+      });
     } catch (error) {
       console.error(error);
     }

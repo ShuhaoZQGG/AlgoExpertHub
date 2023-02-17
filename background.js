@@ -19,21 +19,6 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
   
   const client_id = (await chrome.storage.local.get('client_id')).client_id;
   const client_secret = (await chrome.storage.local.get('client_secret')).client_secret;
-  // chrome.tabs.onActivated.addListener(function(activeInfo) {
-  //   chrome.tabs.get(activeInfo.tabId, (tab) => {
-  //     const tabId = activeInfo.tabId;
-  //     if (tab.url.startsWith("https://www.algoexpert.io/questions/")) {
-  //     chrome.tabs.sendMessage(
-  //         tabId,
-  //         {
-  //           type: "currentTab",
-  //           text: "algo expert is focused",
-  //           tabId: tabId
-  //         }
-  //     )
-  //   }
-  // })
-  // });
   chrome.tabs.onUpdated.addListener(async function(tabId, changeInfo, tab) {
     // Check if the tab's URL has changed
     if (
@@ -63,6 +48,12 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
             type: "currentTab",
             text: "algo expert is focused",
             tabId: tabId
+          },
+          function (response) {
+            if (chrome.runtime.lastError) {
+              console.log('Error: ' + chrome.runtime.lastError.message);
+              console.log(response);
+            }
           }
       )
      }
@@ -74,6 +65,7 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
     chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
       if (request.Authorization_URL) {
         chrome.tabs.create({url: request.Authorization_URL});
+        sendResponse("ok");
         return false;
       }
   
@@ -130,7 +122,7 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
          */
       }
       sendResponse("finishied");
-      return false;
+      return true;
     });  
   } catch (error) {
     console.log("error", error);

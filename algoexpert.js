@@ -25,6 +25,7 @@
   const solutionDivClass = "_5Y_y5dN7pkjcKB22vQiZ"
   const codeClass = "cm-content"
   const titleClass = "wBpuKvBGWdd7o3KaUFOQ";
+  let ErrorMessage = "";
   try {
     chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       // Get all button elements
@@ -94,6 +95,14 @@
                     code: Code,
                     language: Language,
                     extension: Extension
+                  }, function (response) {
+                    if (response) {
+                      console.log(response);
+                    }
+                    if (chrome.runtime.lastError && ErrorMessage != chrome.runtime.lastError.message) {
+                      console.log('Error: ' + chrome.runtime.lastError.message);
+                      ErrorMessage = chrome.runtime.lastError.message;
+                    }
                   });
 
                   sendResponse("ok");
@@ -110,7 +119,7 @@
       }, 1000)
 
       sendResponse("finished");
-      return false;
+      return true;
     });
   } catch (error) {
     sendResponse("error");
