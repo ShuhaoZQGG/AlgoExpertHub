@@ -4,6 +4,7 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
   // Add a listener to handle the alarm
   chrome.alarms.onAlarm.addListener(async (alarm) => {
     if (alarm.name === "awake algoexperthub") {
+      console.log("alarm, awakening extension");
       // Do something here to keep your extension running
       for (const cs of chrome.runtime.getManifest().content_scripts) {
         for (const tab of await chrome.tabs.query({url: cs.matches})) {
@@ -15,11 +16,7 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
       }
     }
   });
-
-  let Owner = (await chrome.storage.local.get("username")).username;
-  let Repo = (await chrome.storage.local.get('repository')).repository;
-  let AuthToken = (await chrome.storage.local.get("auth_token")).auth_token;
-  // When an existing extension refreshed, reload content scripts for all tabs that match the permissions
+  
   chrome.runtime.onInstalled.addListener(async () => {
     for (const cs of chrome.runtime.getManifest().content_scripts) {
       for (const tab of await chrome.tabs.query({url: cs.matches})) {
@@ -32,11 +29,17 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
     chrome.alarms.get('awake algoexperthub', alarm => {
       if (!alarm) {
         // Set up an alarm to go off every 5 minutes
-        chrome.alarms.create("awake algoexperthub", { periodInMinutes: 5 });
+        chrome.alarms.create("awake algoexperthub", { periodInMinutes: 1 });
+        console.log("creating alarm");
       }
     });
-
   });
+
+  let Owner = (await chrome.storage.local.get("username")).username;
+  let Repo = (await chrome.storage.local.get('repository')).repository;
+  let AuthToken = (await chrome.storage.local.get("auth_token")).auth_token;
+  // When an existing extension refreshed, reload content scripts for all tabs that match the permissions
+
   
   const client_id = (await chrome.storage.local.get('client_id')).client_id;
   const client_secret = (await chrome.storage.local.get('client_secret')).client_secret;
