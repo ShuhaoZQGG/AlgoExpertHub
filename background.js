@@ -1,9 +1,6 @@
 import "./credentials.js";
 import { createAuthToken, getUserInfo, getContent, createContent, updateContent } from "./githubApiCalls.js";
 (async () => {
-  // Set up an alarm to go off every 5 minutes
-  chrome.alarms.create("awake algoexperthub", { periodInMinutes: 5 });
-
   // Add a listener to handle the alarm
   chrome.alarms.onAlarm.addListener(async (alarm) => {
     if (alarm.name === "awake algoexperthub") {
@@ -32,6 +29,13 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
         });
       }
     }
+    chrome.alarms.get('awake algoexperthub', alarm => {
+      if (!alarm) {
+        // Set up an alarm to go off every 5 minutes
+        chrome.alarms.create("awake algoexperthub", { periodInMinutes: 5 });
+      }
+    });
+
   });
   
   const client_id = (await chrome.storage.local.get('client_id')).client_id;
