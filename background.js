@@ -1,6 +1,24 @@
 import "./credentials.js";
 import { createAuthToken, getUserInfo, getContent, createContent, updateContent } from "./githubApiCalls.js";
 (async () => {
+  // Set up an alarm to go off every 5 minutes
+  chrome.alarms.create("awake algoexperthub", { periodInMinutes: 5 });
+
+  // Add a listener to handle the alarm
+  chrome.alarms.onAlarm.addListener(async (alarm) => {
+    if (alarm.name === "awake algoexperthub") {
+      // Do something here to keep your extension running
+      for (const cs of chrome.runtime.getManifest().content_scripts) {
+        for (const tab of await chrome.tabs.query({url: cs.matches})) {
+          chrome.scripting.executeScript({
+            target: {tabId: tab.id},
+            files: cs.js,
+          });
+        }
+      }
+    }
+  });
+
   let Owner = (await chrome.storage.local.get("username")).username;
   let Repo = (await chrome.storage.local.get('repository')).repository;
   let AuthToken = (await chrome.storage.local.get("auth_token")).auth_token;
