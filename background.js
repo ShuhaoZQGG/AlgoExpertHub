@@ -111,10 +111,17 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
           const sha = solutionData.sha;
           if (getReadMeResponse.ok == true) {
             const changeSolutionResponse = await updateContent(Owner, Repo, `${name}/${solutionNo}/${name}${extension}`, sha, AuthToken, code, changeSolutionMessage);
-            console.log("changeSolutionResponse", changeSolutionResponse);
-          } else {
+            if (changeSolutionResponse.status != 200 && changeSolutionResponse.status != 201) {
+              throw new Error("create solution failed");
+            } else {
+              console.log("changeSolutionResponse", changeSolutionResponse);
+            }          } else {
             const createSolutionResponse = await createContent(Owner, Repo, `${name}/${solutionNo}/${name}${extension}`, AuthToken, code, createSolutionMessage); 
-            console.log("createSolutionResponse", createSolutionResponse);
+            if (createSolutionResponse.status != 200 && createSolutionResponse.status != 201) {
+              throw new Error("create solution failed");
+            } else {
+              console.log("createSolutionResponse", createSolutionResponse);
+            }
           }
 
           sendResponse("ok");
