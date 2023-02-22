@@ -6,14 +6,6 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
     if (alarm.name === "awake algoexperthub") {
       console.log("alarm, awakening extension");
       // Do something here to keep your extension running
-      for (const cs of chrome.runtime.getManifest().content_scripts) {
-        for (const tab of await chrome.tabs.query({url: cs.matches})) {
-          chrome.scripting.executeScript({
-            target: {tabId: tab.id},
-            files: cs.js,
-          });
-        }
-      }
     }
   });
   
@@ -122,11 +114,7 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
             console.log("changeSolutionResponse", changeSolutionResponse);
           } else {
             const createSolutionResponse = await createContent(Owner, Repo, `${name}/${solutionNo}/${name}${extension}`, AuthToken, code, createSolutionMessage); 
-            if (createSolutionResponse.status != '200' || createSolutionResponse.status != '201') {
-              throw new Error("create solution failed");
-            } else {
-              console.log("createSolutionResponse", createSolutionResponse);
-            }
+            console.log("createSolutionResponse", createSolutionResponse);
           }
 
           sendResponse("ok");
