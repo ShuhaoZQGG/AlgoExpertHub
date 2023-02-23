@@ -36,7 +36,7 @@
           const title = document.getElementsByClassName(titleClass)[0]?.innerText;
           const buttons = document.getElementsByTagName('button');
           const questionDiv = document.getElementsByClassName(questionClass);
-          const questionDivChildNodes = questionDiv[0].childNodes;
+          const questionDivChildNodes = questionDiv[0]?.childNodes;
           const solutionDiv = document.getElementsByClassName(solutionDivClass)
           const codeDiv = document.getElementsByClassName(codeClass);
           SolutionDiv = solutionDiv;

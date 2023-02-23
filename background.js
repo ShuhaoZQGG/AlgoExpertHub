@@ -39,6 +39,7 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
     if (state === 'idle') {
       // Set the alarm to go off in 1 minute
       chrome.alarms.create('awake algoexperthub', { delayInMinutes: 1 });
+      console.log("creating alarm when app goes to inactive");
     }
   });
 
@@ -73,7 +74,7 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
         }
      }
 
-     if (tab.url.startsWith("https://www.algoexpert.io/questions/")) {
+     if (tab.url.startsWith("https://www.algoexpert.io/questions/") && tab.url !== "https://www.algoexpert.io/questions/") {
       chrome.tabs.sendMessage(
           tabId,
           {
@@ -100,13 +101,13 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
         console.log('Extension awoken by user');
       }
 
-      if (request.Authorization_URL) {
+      if (request && request.Authorization_URL) {
         chrome.tabs.create({url: request.Authorization_URL});
         sendResponse("ok");
         return false;
       }
   
-      if (request.contentScriptQuery === "create solution") {
+      if (request && request.contentScriptQuery === "create solution") {
         Owner = (await chrome.storage.local.get("username")).username;
         Repo = (await chrome.storage.local.get('repository')).repository;
         AuthToken = (await chrome.storage.local.get("auth_token")).auth_token;
