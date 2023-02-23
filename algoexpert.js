@@ -33,7 +33,7 @@
           Code = "";
           QuestionTitle = "";
           Question = "";
-          const title = document.getElementsByClassName(titleClass)[0].innerText;
+          const title = document.getElementsByClassName(titleClass)[0]?.innerText;
           const buttons = document.getElementsByTagName('button');
           const questionDiv = document.getElementsByClassName(questionClass);
           const questionDivChildNodes = questionDiv[0].childNodes;
