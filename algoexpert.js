@@ -43,15 +43,18 @@
           CodeDiv = codeDiv;
           QuestionTitle = title;
           Question += "# " + QuestionTitle + '\n';
-          for (const [key, value] of Object.entries(questionDivChildNodes)) {
-            if (value.innerText && (value.innerText.includes("Sample Input") || value.innerText.includes("Sample Output"))) {
-              Question += "**" + value.innerText + "**"
-            } else if (value.textContent) {
-              Question += value.textContent;
-            } else if (value.innerText) {
-              Question += value.innerText
-            } 
+          if (questionDivChildNodes) {
+            for (const [key, value] of Object.entries(questionDivChildNodes)) {
+              if (value.innerText && (value.innerText.includes("Sample Input") || value.innerText.includes("Sample Output"))) {
+                Question += "**" + value.innerText + "**"
+              } else if (value.textContent) {
+                Question += value.textContent;
+              } else if (value.innerText) {
+                Question += value.innerText
+              } 
+            }
           }
+
           // Iterate through the buttons
           for (const button of buttons) {
             // Get the span element inside the button
@@ -64,10 +67,10 @@
             }
           }
         }
-        SubmitButton.addEventListener('click', async function() {
+        SubmitButton?.addEventListener('click', async function() {
           Code = CodeDiv[CodeDiv.length-1].innerText;
   
-          for (const [key, value] of Object.entries(SolutionDiv[0].childNodes)) {
+          for (const [key, value] of Object.entries(SolutionDiv[0]?.childNodes)) {
             if(value.classList.length == 2) {
               SolutionButton = value.innerText;
             }
@@ -75,13 +78,13 @@
           const languageClass = "oWoHqZGV1RWlIC1vbJQA";
           const resultClassName = "jq63ZT06FaZykTzWRxJS";
           setTimeout(() => {
-            const language = document.getElementsByClassName(languageClass);
-            Language = language[0].innerText;
+            const language = document?.getElementsByClassName(languageClass);
+            Language = language[0]?.innerText;
             Extension = LanguageMapping[Language];
-            const resultPara = document.getElementsByClassName(resultClassName);
+            const resultPara = document?.getElementsByClassName(resultClassName);
             if (resultPara) {
-              const resultText = resultPara[0].innerText;
-              if (resultText.includes("Congratulations!")) {
+              const resultText = resultPara[0]?.innerText;
+              if (resultText?.includes("Congratulations!")) {
                 // This function will be executed when the button is clicked
                 if (chrome.runtime?.id) {
                   chrome.runtime.sendMessage({
