@@ -24,7 +24,8 @@
     "storage",
     "tabs",
     "scripting",
-    "alarms"
+    "alarms",
+    "idle"
   ],
   "content_scripts": [
     {   

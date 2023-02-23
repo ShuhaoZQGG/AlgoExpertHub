@@ -1,11 +1,15 @@
 import "./credentials.js";
 import { createAuthToken, getUserInfo, getContent, createContent, updateContent } from "./githubApiCalls.js";
 (async () => {
-  // Add a listener to handle the alarm
+  // Set up a listener for when the alarm goes off
   chrome.alarms.onAlarm.addListener(async (alarm) => {
-    if (alarm.name === "awake algoexperthub") {
+    // Check if the alarm that went off is the one we set
+    if (alarm && alarm.name === "awake algoexperthub") {
       console.log("alarm, awakening extension");
-      // Do something here to keep your extension running
+      // Do something to wake up the background script
+      chrome.runtime.sendMessage({wakeUp: true});
+      // Set the alarm to go off again in 5 minutes
+      chrome.alarms.create('awake algoexperthub', { delayInMinutes: 5 });
     }
   });
   
@@ -18,14 +22,26 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
         });
       }
     }
+    // Set up a listener for when the extension is installed or updated
     chrome.alarms.get('awake algoexperthub', alarm => {
       if (!alarm) {
         // Set up an alarm to go off every 5 minutes
-        chrome.alarms.create("awake algoexperthub", { periodInMinutes: 1 });
+        chrome.alarms.create("awake algoexperthub", { delayInMinutes: 1 });
         console.log("creating alarm");
       }
     });
   });
+  
+  
+  // Set up a listener for when the user becomes idle
+  chrome.idle.onStateChanged.addListener(function(state) {
+    // Check if the user is now idle
+    if (state === 'idle') {
+      // Set the alarm to go off in 1 minute
+      chrome.alarms.create('awake algoexperthub', { delayInMinutes: 1 });
+    }
+  });
+
 
   let Owner = (await chrome.storage.local.get("username")).username;
   let Repo = (await chrome.storage.local.get('repository')).repository;
@@ -79,6 +95,11 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
   // `tab` will either be a `tabs.Tab` instance or `undefined`.
   try {
     chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
+      if (request && request.wakeUp) {
+        // Do something to wake up the background script
+        console.log('Extension awoken by user');
+      }
+
       if (request.Authorization_URL) {
         chrome.tabs.create({url: request.Authorization_URL});
         sendResponse("ok");
