@@ -171,8 +171,7 @@
       return false;
     });
   } catch (error) {
-    sendResponse("error");
-    //console.log(error);
+    console.log(error);
   }
 })();
 
