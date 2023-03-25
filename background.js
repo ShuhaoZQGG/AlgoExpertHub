@@ -98,61 +98,6 @@ import { createAuthToken, getUserInfo, getContent, createContent, updateContent 
         sendResponse("ok");
         return false;
       }
-  
-      if (request && request.contentScriptQuery === "create solution") {
-        Owner = (await chrome.storage.local.get("username")).username;
-        Repo = (await chrome.storage.local.get('repository')).repository;
-        AuthToken = (await chrome.storage.local.get("auth_token")).auth_token;
-        try {
-          /**
-           *  @todo get file path: if readme is already created: skip it
-           *  @todo get file path: if any solution is already existed, get the sha number and update the content
-           * */ 
-                  
-          const createReadMeMessage = "create the folder for the question and write question information into a README.md";
-          const { contentScriptQuery, name, solutionNo, question, code, language, extension } = request;
-          console.log("AuthToken received", AuthToken);
-          const getReadMeResponse = await getContent(Owner, Repo, `${name}/README.md`, AuthToken);
-          if (getReadMeResponse.ok != true) {
-            const createReadMeResponse = await createContent(Owner, Repo, `${name}/README.md`, AuthToken, question, createReadMeMessage);
-            console.log("createReadMeResponse", createReadMeResponse);
-          } else {}
-  
-          const createSolutionMessage = `Create ${language} ${solutionNo} for question ${name}`;
-          const changeSolutionMessage = `Change ${language} ${solutionNo} for question ${name}`;
-          const getSolutionResponse = await getContent(Owner, Repo, `${name}/${solutionNo}/${name}${extension}`, AuthToken)
-          const solutionData = await getSolutionResponse.json();
-          const sha = solutionData.sha;
-          if (getReadMeResponse.ok == true) {
-            const changeSolutionResponse = await updateContent(Owner, Repo, `${name}/${solutionNo}/${name}${extension}`, sha, AuthToken, code, changeSolutionMessage);
-            if (changeSolutionResponse.status != 200 && changeSolutionResponse.status != 201) {
-              throw new Error("create solution failed");
-            } else {
-              console.log("changeSolutionResponse", changeSolutionResponse);
-            }          } else {
-            const createSolutionResponse = await createContent(Owner, Repo, `${name}/${solutionNo}/${name}${extension}`, AuthToken, code, createSolutionMessage); 
-            if (createSolutionResponse.status != 200 && createSolutionResponse.status != 201) {
-              throw new Error("create solution failed");
-            } else {
-              console.log("createSolutionResponse", createSolutionResponse);
-            }
-          }
-
-          sendResponse("ok");
-          return true;
-        } catch(error) {
-          sendResponse("error");
-          console.log(error);
-          return false;
-        }
-        /**
-         * @description return true for ascyncronous functions
-         * @error Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, 
-         *        but the message channel closed before a response was received
-         */
-      }
-      sendResponse("finishied");
-      return true;
     });  
   } catch (error) {
     console.log("error", error);
