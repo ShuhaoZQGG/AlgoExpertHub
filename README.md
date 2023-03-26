@@ -13,6 +13,6 @@ For any algoexpert users who want to:
 
 Microsfot Edge can also use this extension.
 
-Newest Version Update:
+# Newest Version Update:
 1. Now Scrathpad is also pushed to Github
 2. The issue of submit answer doesn't have response is sovled by moving the github calls away from background service workers, because service workers stop after a short period of time
