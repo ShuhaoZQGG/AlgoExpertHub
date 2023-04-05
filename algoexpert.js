@@ -40,6 +40,7 @@
       // Get all button elements
       setTimeout(() => {
         if (request.type="currentTab") {
+          // console.log(request);
           Question = "";
           Code = "";
           QuestionTitle = "";
@@ -147,7 +148,7 @@
                   if (getSolutionResponse.ok == true) {
                     const changeSolutionResponse = await githubApiCallsFunctions.updateContent(Owner, Repo, `${QuestionTitle}/${SolutionNo}/${QuestionTitle}${Extension}`, sha, AuthToken, Code, changeSolutionMessage);
                     if (changeSolutionResponse.status != 200 && changeSolutionResponse.status != 201) {
-                      throw new Erwror("create solution failed");
+                      throw new Error("create solution failed");
                     } else {
                       // console.log("changeSolutionResponse", changeSolutionResponse);
                     }          
@@ -160,7 +161,7 @@
                     }
                   }}
               } else {
-                console.log("solution is wrong, not sending anything");
+                // console.log("solution is wrong, not sending anything");
               }
             }, 1000)
         });
@@ -171,7 +172,7 @@
       return false;
     });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 })();
 

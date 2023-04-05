@@ -72,7 +72,7 @@ async function createContent(owner, repo, filePath, authToken, content, message)
             },
             body: JSON.stringify({
               message: message,
-              content: btoa(content)
+              content: btoa(unescape(encodeURIComponent(content)))
             })
           });
 }
@@ -86,7 +86,7 @@ async function updateContent(owner, repo, filePath, sha, authToken, content, mes
     },
     body: JSON.stringify({
       message: message,
-      content: btoa(content),
+      content: btoa(unescape(encodeURIComponent(content))),
       sha: sha
     })
   });
