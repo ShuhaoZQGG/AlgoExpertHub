@@ -10,3 +10,9 @@ For any algoexpert users who want to:
 2. Authorize AlgoExpertHub to access your Github Read and Write Rights by click Authorize Button
 2. After successful authorization, create a new repository and link an existing repository by entering repository name into the input field and click "link". Click unlink button if you want to unlink the repository
 3. Now, solve more questions on https://www.algoexpert.io enjoy more commits show up on your Github and track your progress!
+
+Microsfot Edge can also use this extension.
+
+# Newest Version Update:
+1. Now Scrathpad is also pushed to Github
+2. The issue of submit answer doesn't have response is sovled by moving the github calls away from background service workers, because service workers stop after a short period of time
