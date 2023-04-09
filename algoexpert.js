@@ -31,9 +31,7 @@
   const codeClass = "cm-content"
   const titleClass = "wBpuKvBGWdd7o3KaUFOQ";
   // TODO Get scratchPad Content, publish it as a new file if it only has one child and the content !== Write whatever you want here.
-  const scratchPadClass = "cm-activeLine cm-line";
-  const scratchPadDiv = document.getElementsByClassName(scratchPadClass);
-  let scratchPadContent;
+  const scratchPadClass = ".SH2k7kjVSwFKa7pieAE8";
   let ErrorMessage = "";
   try {
     chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -80,17 +78,16 @@
           }
         }
         SubmitButton?.addEventListener('click', async function() {
-          scratchPadContent = '<pre>'+ `\n` + scratchPadDiv[0]?.innerText + `\n`;
-          let scratchPadCurrentNode = scratchPadDiv[0];
-          // check if the next sibling of scratchPadDiv is a div with class cm-line, if yes, then continue to get the content of the next sibling until the next sibling is not a div with class cm-line
-          while (scratchPadCurrentNode?.nextSibling?.classList?.contains("cm-line")) {
-            scratchPadCurrentNode = scratchPadCurrentNode?.nextSibling;
-            // console.log(scratchPadCurrentNode);
-            scratchPadContent += scratchPadCurrentNode.innerText + `\n`;
-          }
-          scratchPadContent += '</pre>';
-          // console.log('scratchPadDiv', scratchPadDiv);
-          // console.log("scratchPadContent", scratchPadContent);
+          const scratchPadDiv = document.querySelector(`${scratchPadClass} .cm-editor .cm-content`);
+          const cmLines = scratchPadDiv.querySelectorAll('.cm-line');
+          const concatenatedText = 
+            Array.from(cmLines)
+                 .map(cmLine => cmLine.textContent.trim())
+                 .join('\n');
+          console.log(scratchPadDiv);
+          console.log(cmLines);
+          console.log(concatenatedText);
+          const scratchPadContent = '<pre>' + concatenatedText + '</pre>';
 
           Code = CodeDiv[CodeDiv.length-1].innerText;
   
