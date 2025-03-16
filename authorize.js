@@ -93,6 +93,8 @@ const oauth = {
        }
       } catch(e) {
         console.error(e);
+        // retry getting authorized user.
+        this.getAuthorizedUser();
       }
     } else {
       console.log("something is wrong");
